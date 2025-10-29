@@ -1,0 +1,1169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="Find Sweet Wheels food truck in Knoxville. Grab deals, spin to win discounts, and follow our daily route.">
+  <title>Sweet Wheels — Sweet Deals! | Today's Route</title>
+  
+  <!-- Preconnects -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" crossorigin>
+  <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+  
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pacifico&family=Inter:wght@400..800&family=Poppins:wght@500..700&display=swap">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" rel="stylesheet">
+  
+  <!-- Leaflet -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+  
+  <style>
+    /* ===== COLOR TOKENS (OKLCH with sRGB fallbacks) ===== */
+    @supports (color: oklch(0% 0 0)) {
+      :root {
+        --pink: oklch(95% 0.05 350);
+        --mint: oklch(97% 0.04 160);
+        --lemon: oklch(97% 0.06 90);
+        --sky: oklch(96% 0.03 230);
+        --lilac: oklch(94% 0.06 290);
+        --ink: oklch(26% 0.03 240);
+        --muted: oklch(48% 0.02 240);
+        --subtle: oklch(58% 0.02 240);
+        --white: oklch(100% 0 0);
+        --cta-start: oklch(87% 0.12 340);
+        --cta-end: oklch(82% 0.15 290);
+        --cta-ink: oklch(18% 0.04 250);
+      }
+    }
+    
+    @supports not (color: oklch(0% 0 0)) {
+      :root {
+        --pink: #ffe8f1;
+        --mint: #e3fff7;
+        --lemon: #fff4cf;
+        --sky: #eaf6ff;
+        --lilac: #f1eaff;
+        --ink: #273049;
+        --muted: #5d6b86;
+        --subtle: #7a87a0;
+        --white: #fff;
+        --cta-start: #ffbedc;
+        --cta-end: #cdbbff;
+        --cta-ink: #1a2340;
+      }
+    }
+    
+    :root {
+      --card: #ffffffee;
+      --card-border: #00000010;
+      --shadow: 0 14px 38px rgba(24,33,56,.14);
+      --shadow-lg: 0 24px 58px rgba(24,33,56,.18);
+      --radius: 24px;
+      --radius-sm: 16px;
+      --ring: 0 0 0 3px rgba(169,139,255,.32);
+      --container: 1200px;
+      --spacing-xs: clamp(8px, 1.5vw, 12px);
+      --spacing-sm: clamp(12px, 2vw, 18px);
+      --spacing-md: clamp(18px, 3vw, 28px);
+      --spacing-lg: clamp(32px, 5vw, 56px);
+      --spacing-xl: clamp(48px, 7vw, 88px);
+      --transition-fast: 180ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-base: 280ms cubic-bezier(0.4, 0, 0.2, 1);
+      --transition-slow: 420ms cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+    
+    body {
+      min-height: 100vh;
+      min-height: 100svh;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      font-size: clamp(15px, 1.8vw, 17px);
+      line-height: 1.6;
+      color: var(--ink);
+      background: fixed linear-gradient(180deg, var(--pink) 0%, var(--mint) 40%, var(--sky) 75%, var(--lilac) 100%);
+      position: relative;
+      overflow-x: hidden;
+    }
+    
+    /* Animated gradient overlay */
+    body::before {
+      content: "";
+      position: fixed;
+      inset: -10% -5% auto -5%;
+      height: 70vh;
+      z-index: -1;
+      background:
+        radial-gradient(ellipse 800px 600px at 20% 20%, rgba(255,218,236,.75), transparent),
+        radial-gradient(ellipse 700px 500px at 85% 30%, rgba(201,182,255,.58), transparent),
+        radial-gradient(ellipse 900px 700px at 50% 80%, rgba(223,252,246,.62), transparent);
+      animation: float 20s ease-in-out infinite;
+      pointer-events: none;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0); }
+      33% { transform: translate(2%, -3%); }
+      66% { transform: translate(-3%, 2%); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      body::before { animation: none; }
+    }
+    
+    /* ===== TYPOGRAPHY ===== */
+    h1, h2, h3 { line-height: 1.1; font-weight: 700; }
+    h1 { font-size: clamp(38px, 9vw, 78px); }
+    h2 { font-size: clamp(28px, 5vw, 42px); }
+    h3 { font-size: clamp(20px, 3.5vw, 28px); }
+    
+    a {
+      color: inherit;
+      text-decoration: none;
+      transition: opacity var(--transition-fast);
+    }
+    
+    /* ===== UTILITIES ===== */
+    .container {
+      max-width: var(--container);
+      margin-inline: auto;
+      padding-inline: clamp(16px, 4vw, 32px);
+    }
+    
+    .sr-only {
+      position: absolute !important;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0,0,0,0);
+      white-space: nowrap;
+      border-width: 0;
+    }
+    
+    .skip-link {
+      position: absolute;
+      left: -9999px;
+      z-index: 100;
+    }
+    
+    .skip-link:focus {
+      left: var(--spacing-sm);
+      top: var(--spacing-sm);
+      padding: 12px 18px;
+      background: var(--white);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow);
+      font-weight: 600;
+    }
+    
+    /* ===== HEADER ===== */
+    header {
+      padding-block: var(--spacing-sm);
+      background: transparent;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px) saturate(1.2);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      border-bottom: 1px solid rgba(255,255,255,.3);
+    }
+    
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--spacing-sm);
+    }
+    
+    .brand {
+      font-family: Pacifico, cursive;
+      font-size: clamp(22px, 3.5vw, 32px);
+      color: #ff7fb5;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      line-height: 1;
+      text-shadow: 0 2px 4px rgba(255,127,181,.2);
+      transition: transform var(--transition-fast);
+    }
+    
+    .brand:hover {
+      transform: translateY(-1px);
+    }
+    
+    .brand i {
+      font-size: 1.2em;
+      animation: wobble 3s ease-in-out infinite;
+    }
+    
+    @keyframes wobble {
+      0%, 100% { transform: rotate(0deg); }
+      25% { transform: rotate(-8deg); }
+      75% { transform: rotate(8deg); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .brand i { animation: none; }
+    }
+    
+    .social {
+      display: flex;
+      gap: var(--spacing-xs);
+    }
+    
+    .social a {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: var(--white);
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+    
+    .social a:hover {
+      transform: translateY(-2px) scale(1.05);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .social a:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow), var(--ring);
+    }
+    
+    .social i {
+      font-size: 18px;
+      color: #25324d;
+    }
+    
+    /* ===== HERO ===== */
+    .hero {
+      padding-block: var(--spacing-xl);
+      text-align: center;
+      display: grid;
+      gap: var(--spacing-md);
+      position: relative;
+    }
+    
+    .eyebrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 10px 18px;
+      background: linear-gradient(135deg, var(--white), var(--lilac));
+      border: 1px solid var(--card-border);
+      border-radius: 999px;
+      box-shadow: var(--shadow);
+      font-size: clamp(13px, 2vw, 15px);
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .eyebrow { animation: none; }
+    }
+    
+    h1 {
+      font-family: Pacifico, cursive;
+      font-weight: 400;
+      margin-block: 0.2em 0.3em;
+    }
+    
+    h1 .accent {
+      color: #ff7fb5;
+      text-shadow: 0 2px 8px rgba(255,127,181,.3);
+    }
+    
+    .lead {
+      color: var(--muted);
+      max-width: 68ch;
+      margin-inline: auto;
+      font-size: clamp(16px, 2.2vw, 19px);
+    }
+    
+    .hero-cta {
+      display: flex;
+      gap: var(--spacing-sm);
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: var(--spacing-md);
+    }
+    
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 14px 24px;
+      border-radius: 999px;
+      border: 1px solid var(--card-border);
+      box-shadow: var(--shadow);
+      font-weight: 700;
+      font-size: clamp(14px, 2vw, 16px);
+      letter-spacing: 0.2px;
+      cursor: pointer;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast), filter var(--transition-fast);
+      min-height: 44px;
+      min-width: 44px;
+    }
+    
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-lg);
+      filter: saturate(1.1) brightness(1.05);
+    }
+    
+    .btn:focus-visible {
+      outline: none;
+      box-shadow: var(--shadow), var(--ring);
+    }
+    
+    .btn:active {
+      transform: translateY(0);
+    }
+    
+    .btn-cta {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      color: var(--cta-ink);
+    }
+    
+    .btn-ghost {
+      background: var(--white);
+      color: #28324d;
+    }
+    
+    .btn[disabled] {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--card);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: var(--spacing-md);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+    
+    /* ===== PANEL LAYOUT ===== */
+    .panel {
+      display: grid;
+      gap: var(--spacing-md);
+      margin-block: var(--spacing-lg);
+    }
+    
+    @media (min-width: 1024px) {
+      .panel {
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: start;
+      }
+    }
+    
+    /* ===== MAP ===== */
+    .map-card h2 {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    #map-skeleton {
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: var(--radius-sm);
+      border: 2px dashed rgba(205,187,255,.4);
+      display: grid;
+      place-items: center;
+      color: var(--subtle);
+      background: repeating-linear-gradient(
+        45deg,
+        rgba(250,250,255,.3),
+        rgba(250,250,255,.3) 10px,
+        rgba(245,242,255,.3) 10px,
+        rgba(245,242,255,.3) 20px
+      );
+      animation: skeleton-pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes skeleton-pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.6; }
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      #map-skeleton { animation: none; }
+    }
+    
+    #map {
+      display: none;
+      width: 100%;
+      aspect-ratio: 16/10;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--card-border);
+      overflow: hidden;
+    }
+    
+    .map-card.map-ready #map {
+      display: block;
+    }
+    
+    .map-card.map-ready #map-skeleton {
+      display: none;
+    }
+    
+    .map-card .subtle {
+      margin-block: var(--spacing-sm);
+      color: var(--subtle);
+      font-size: 0.95em;
+    }
+    
+    /* ===== SHOTS GRID ===== */
+    .shots-grid {
+      --cols: 2;
+      display: grid;
+      grid-template-columns: repeat(var(--cols), 1fr);
+      gap: 10px;
+      list-style: none;
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    @media (min-width: 500px) {
+      .shots-grid { --cols: 3; }
+    }
+    
+    @media (min-width: 768px) {
+      .shots-grid { --cols: 4; }
+    }
+    
+    @media (min-width: 1024px) {
+      .shots-grid { --cols: 3; }
+    }
+    
+    .shots-grid figure {
+      position: relative;
+      margin: 0;
+      aspect-ratio: 1;
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      border: 1px solid var(--card-border);
+      background: var(--white);
+      transition: transform var(--transition-base);
+    }
+    
+    .shots-grid figure:hover {
+      transform: scale(1.03);
+      z-index: 1;
+    }
+    
+    .shots-grid img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    
+    .show-toggle {
+      display: none;
+      width: 100%;
+    }
+    
+    @media (max-width: 1023px) {
+      .show-toggle {
+        display: inline-flex;
+      }
+      
+      .shots-grid.collapsible:not(.expanded) > li:nth-child(n+7) {
+        display: none;
+      }
+    }
+    
+    .shots-card .subtle {
+      margin-top: var(--spacing-sm);
+      color: var(--subtle);
+      font-size: 0.95em;
+    }
+    
+    /* ===== SPIN SECTION ===== */
+    .spin {
+      margin-block: var(--spacing-xl);
+    }
+    
+    .spin > h2 {
+      text-align: center;
+      margin-bottom: var(--spacing-md);
+    }
+    
+    .spin-grid {
+      display: grid;
+      gap: var(--spacing-md);
+    }
+    
+    @media (max-width: 767px) {
+      .spin-grid {
+        max-width: min(560px, 92vw);
+        margin-inline: auto;
+      }
+    }
+    
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .spin-grid {
+        max-width: 800px;
+        margin-inline: auto;
+      }
+    }
+    
+    @media (min-width: 1024px) {
+      .spin-grid {
+        grid-template-columns: 1.2fr 0.8fr;
+        align-items: center;
+      }
+    }
+    
+    .spin-instructions h3 {
+      margin-bottom: var(--spacing-sm);
+    }
+    
+    .spin-instructions ol {
+      margin-block: var(--spacing-sm) var(--spacing-md);
+      padding-left: 1.5em;
+      line-height: 1.8;
+    }
+    
+    .spin-instructions li {
+      margin-block: 0.5em;
+    }
+    
+    /* ===== SPINNER COMPONENT ===== */
+    #spinner-container {
+      display: grid;
+      place-items: center;
+      gap: var(--spacing-sm);
+      padding: var(--spacing-md);
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #fffafe, #f6fbff);
+    }
+    
+    .wheel-stack {
+      --wheel-size: clamp(260px, 50vmin, 380px);
+      position: relative;
+      width: var(--wheel-size);
+      height: var(--wheel-size);
+      display: grid;
+      place-items: center;
+      background: radial-gradient(120% 120% at 30% 15%, #fff, #f3f6ff 60%);
+      border-radius: 50%;
+      box-shadow: 
+        0 18px 38px rgba(40,60,120,.18),
+        inset 0 4px 10px rgba(255,255,255,.8),
+        inset 0 -10px 18px rgba(160,180,220,.25);
+    }
+    
+    @media (min-width: 768px) and (max-width: 1023px) {
+      .wheel-stack {
+        --wheel-size: clamp(320px, 56vmin, 440px);
+      }
+    }
+    
+    .inner-ring {
+      position: absolute;
+      inset: 10px;
+      border-radius: 50%;
+      box-shadow: inset 0 0 0 10px rgba(255,255,255,.67);
+      pointer-events: none;
+      z-index: 1;
+    }
+    
+    #wheel-canvas {
+      width: calc(100% - 24px);
+      height: calc(100% - 24px);
+      border-radius: 50%;
+      display: block;
+      z-index: 2;
+      position: relative;
+      background: radial-gradient(78% 78% at 50% 45%, #ffffff 0%, #f3f6ff 65%, #eaf1ff 100%);
+    }
+    
+    .pointer {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(32px, 5vmin, 40px);
+      color: #ff92ae;
+      line-height: 1;
+      text-shadow: 
+        0 1px 0 #fff,
+        0 -1px 0 #fff,
+        1px 0 0 #fff,
+        -1px 0 0 #fff,
+        0 6px 14px rgba(255,130,170,.35);
+      pointer-events: none;
+      z-index: 10;
+    }
+    
+    .cap {
+      position: absolute;
+      --cap-size: clamp(44px, 9%, 62px);
+      width: var(--cap-size);
+      height: var(--cap-size);
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, #fff2c8, #ffc3de 55%, #b9d6ff 100%);
+      border: 3px solid #fff;
+      z-index: 5;
+      pointer-events: none;
+      box-shadow: 
+        inset 0 0 10px rgba(255,255,255,.7),
+        0 6px 18px rgba(140,165,210,.35);
+    }
+    
+    .spinner-controls {
+      display: flex;
+      gap: var(--spacing-sm);
+      align-items: center;
+      justify-content: center;
+      margin-top: var(--spacing-sm);
+      flex-wrap: wrap;
+    }
+    
+    .readout {
+      background: var(--white);
+      padding: 10px 18px;
+      border-radius: 999px;
+      box-shadow: 0 6px 16px rgba(150,170,210,.25);
+      color: var(--ink);
+      font-size: clamp(14px, 2vw, 16px);
+      font-weight: 600;
+      min-width: 160px;
+      text-align: center;
+    }
+    
+    .readout strong {
+      color: #ff7fb5;
+    }
+    
+    /* ===== FOOTER ===== */
+    footer {
+      margin-top: var(--spacing-xl);
+      padding-block: var(--spacing-lg);
+      text-align: center;
+      color: var(--muted);
+      font-size: 0.95em;
+    }
+    
+    footer p {
+      margin-block: 0.5em;
+    }
+    
+    footer strong {
+      color: var(--ink);
+    }
+    
+    footer a {
+      color: #ff7fb5;
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 2px;
+    }
+    
+    footer a:hover {
+      text-decoration-thickness: 2px;
+    }
+    
+    .disclaimer {
+      max-width: 70ch;
+      margin-inline: auto;
+      margin-top: var(--spacing-md);
+      padding: var(--spacing-sm);
+      background: rgba(255,255,255,.3);
+      border-radius: var(--radius-sm);
+      font-size: 0.9em;
+    }
+  </style>
+</head>
+<body id="top">
+  <a href="#main" class="skip-link">Skip to content</a>
+  
+  <header role="banner">
+    <div class="container header-bar">
+      <a class="brand" href="#top">
+        <i class="fa-solid fa-ice-cream" aria-hidden="true"></i>
+        <span>Sweet Wheels</span>
+      </a>
+      <nav class="social" aria-label="Social media links">
+        <a href="https://instagram.com" aria-label="Follow us on Instagram" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+        </a>
+        <a href="https://tiktok.com" aria-label="Follow us on TikTok" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-tiktok" aria-hidden="true"></i>
+        </a>
+        <a href="https://facebook.com" aria-label="Follow us on Facebook" target="_blank" rel="noopener noreferrer">
+          <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
+        </a>
+      </nav>
+    </div>
+  </header>
+  
+  <main id="main" class="container" role="main">
+    <!-- HERO -->
+    <section class="hero" aria-labelledby="hero-title">
+      <div class="eyebrow">
+        <i class="fa-solid fa-clock" aria-hidden="true"></i>
+        <span>Today only · Knoxville route</span>
+      </div>
+      
+      <h1 id="hero-title">
+        Sweet Wheels, <span class="accent">Sweet Deals!</span>
+      </h1>
+      
+      <p class="lead">
+        Find the truck on today's route and grab a dessert deal. One tap to open Maps, one spin to save.
+      </p>
+      
+      <div class="hero-cta">
+        <a class="btn btn-cta" href="#route">
+          <i class="fa-solid fa-map" aria-hidden="true"></i>
+          <span>Open in Maps</span>
+        </a>
+        <a class="btn btn-ghost" href="#spin">
+          <i class="fa-solid fa-gift" aria-hidden="true"></i>
+          <span>Spin to Win!</span>
+        </a>
+      </div>
+    </section>
+    
+    <!-- MAP + SHOTS PANEL -->
+    <section class="panel" id="route" aria-label="Today's route and customer photos">
+      <!-- Map Card -->
+      <article class="card map-card" id="route-card">
+        <h2>Today's Route</h2>
+        <div id="map-skeleton" aria-hidden="true">
+          <i class="fa-solid fa-spinner fa-spin" style="font-size: 32px; color: var(--subtle);"></i>
+        </div>
+        <div id="map" role="region" aria-label="Interactive map showing truck location"></div>
+        <p class="subtle">
+          <i class="fa-brands fa-instagram" aria-hidden="true"></i>
+          Follow our Instagram Stories for live updates and pop-up stops.
+        </p>
+        <a class="btn btn-ghost" id="maps-link" href="#" target="_blank" rel="noopener noreferrer">
+          <i class="fa-solid fa-location-dot" aria-hidden="true"></i>
+          <span>Open in Maps</span>
+        </a>
+      </article>
+      
+      <!-- Shots Card -->
+      <aside class="card shots-card" aria-label="Customer sweet shots">
+        <h2 class="sr-only">Sweet Shots Gallery</h2>
+        <ul class="shots-grid" id="shots" role="list"></ul>
+        <button class="btn btn-ghost show-toggle" id="shots-toggle" type="button" aria-controls="shots" aria-expanded="false">
+          See more
+        </button>
+        <p class="subtle">
+          <i class="fa-solid fa-hashtag" aria-hidden="true"></i>
+          Tag <strong>#SweetWheelsKnox</strong> to be featured.
+        </p>
+      </aside>
+    </section>
+    
+    <!-- SPIN SECTION -->
+    <section class="spin" id="spin" aria-labelledby="spin-title">
+      <h2 id="spin-title">Spin to Win a Sweet Deal</h2>
+      
+      <div class="spin-grid">
+        <!-- Instructions -->
+        <aside class="card spin-instructions" aria-label="How the promotion works">
+          <h3>How it works</h3>
+          <ol>
+            <li>Tap <strong>SPIN</strong> below.</li>
+            <li>Show the winning message at checkout.</li>
+            <li>One spin per guest · Select items · Not combinable.</li>
+          </ol>
+          <a class="btn btn-cta" href="#route">
+            <i class="fa-solid fa-map" aria-hidden="true"></i>
+            <span>Find Today's Stop</span>
+          </a>
+        </aside>
+        
+        <!-- Spinner -->
+        <section id="spinner-container" class="spin-wheel" aria-label="Promotional discount wheel">
+          <div class="wheel-stack">
+            <i class="fa-solid fa-caret-down pointer" aria-hidden="true"></i>
+            <span class="inner-ring" aria-hidden="true"></span>
+            <canvas id="wheel-canvas" aria-hidden="true"></canvas>
+            <div class="cap" aria-hidden="true"></div>
+          </div>
+          
+          <div class="spinner-controls">
+            <button class="btn btn-cta" id="spin-btn" type="button">
+              <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+              <span>Spin</span>
+            </button>
+            <span class="readout" role="status" aria-live="polite" id="status">Ready to spin!</span>
+          </div>
+        </section>
+      </div>
+    </section>
+  </main>
+  
+  <footer class="container" role="contentinfo">
+    <p>
+      <strong>Sweet Wheels</strong> · Knoxville, TN ·
+      <a href="mailto:hello@sweetwheels.example">hello@sweetwheels.example</a>
+    </p>
+    
+    <div class="disclaimer">
+      <strong>Portfolio mock:</strong> This landing page is a playful demonstration, not a real business.
+      Map location and promo wheel are examples only—no prizes, purchases, or data collection.
+      If you like the vibe, imagine what a themed landing page could do for <em>your</em> brand. 🍦
+    </div>
+  </footer>
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+  <script type="module">
+    // ===== CONFIG =====
+    const LIVE_LOCATION = { 
+      lat: 35.9606, 
+      lng: -83.9207, 
+      label: "Downtown Knoxville" 
+    };
+    
+    const SHOTS = [
+      {src:"https://placehold.co/600x600/FFE2AF/333?text=Mint+Chip",alt:"Customer photo: mint chip cone"},
+      {src:"https://placehold.co/600x600/C6F0D0/333?text=Banana+Split",alt:"Customer photo: banana split"},
+      {src:"https://placehold.co/600x600/FFD99A/333?text=Strawberry",alt:"Customer photo: strawberry sundae"},
+      {src:"https://placehold.co/600x600/D6D4FF/333?text=Chocolate",alt:"Customer photo: chocolate shake"},
+      {src:"https://placehold.co/600x600/FFC9D8/333?text=Vanilla",alt:"Customer photo: vanilla swirl"},
+      {src:"https://placehold.co/600x600/B9E6FF/333?text=Cookie+Dough",alt:"Customer photo: cookie dough"},
+      {src:"https://placehold.co/600x600/FFE2AF/333?text=Blueberry",alt:"Customer photo: blueberry cone"},
+      {src:"https://placehold.co/600x600/C6F0D0/333?text=Pistachio",alt:"Customer photo: pistachio scoop"},
+      {src:"https://placehold.co/600x600/FFD99A/333?text=Caramel",alt:"Customer photo: caramel swirl"},
+      {src:"https://placehold.co/600x600/D6D4FF/333?text=Sprinkles",alt:"Customer photo: rainbow sprinkles"},
+      {src:"https://placehold.co/600x600/FFC9D8/333?text=Cookies",alt:"Customer photo: cookies and cream"},
+      {src:"https://placehold.co/600x600/B9E6FF/333?text=Peach",alt:"Customer photo: peach sorbet"}
+    ];
+    
+    // ===== SHOTS GRID =====
+    const shotsEl = document.getElementById('shots');
+    const toggleBtn = document.getElementById('shots-toggle');
+    
+    SHOTS.forEach(({src, alt}) => {
+      const li = document.createElement('li');
+      const figure = document.createElement('figure');
+      const img = document.createElement('img');
+      const caption = document.createElement('figcaption');
+      
+      img.src = src;
+      img.alt = alt;
+      img.loading = 'lazy';
+      img.decoding = 'async';
+      img.width = 600;
+      img.height = 600;
+      
+      caption.textContent = alt;
+      caption.className = 'sr-only';
+      
+      figure.appendChild(img);
+      figure.appendChild(caption);
+      li.appendChild(figure);
+      shotsEl.appendChild(li);
+    });
+    
+    // Collapse logic for mobile/tablet
+    const mqlCollapse = window.matchMedia('(max-width: 1023px)');
+    
+    function updateShotsToggle() {
+      if (mqlCollapse.matches) {
+        shotsEl.classList.add('collapsible');
+        if (!shotsEl.classList.contains('expanded')) {
+          toggleBtn.textContent = 'See more';
+          toggleBtn.setAttribute('aria-expanded', 'false');
+        } else {
+          toggleBtn.textContent = 'See less';
+          toggleBtn.setAttribute('aria-expanded', 'true');
+        }
+        toggleBtn.hidden = SHOTS.length <= 6;
+      } else {
+        shotsEl.classList.remove('collapsible', 'expanded');
+        toggleBtn.hidden = true;
+      }
+    }
+    
+    toggleBtn.addEventListener('click', () => {
+      shotsEl.classList.toggle('expanded');
+      updateShotsToggle();
+    });
+    
+    mqlCollapse.addEventListener('change', updateShotsToggle);
+    updateShotsToggle();
+    
+    // ===== MAP (LAZY LOAD) =====
+    const mapCard = document.getElementById('route-card');
+    const mapEl = document.getElementById('map');
+    const mapsLink = document.getElementById('maps-link');
+    
+    mapsLink.href = `https://www.google.com/maps/search/?api=1&query=${LIVE_LOCATION.lat}%2C${LIVE_LOCATION.lng}`;
+    
+    let mapInited = false;
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting && !mapInited) {
+          initMap();
+          mapInited = true;
+          obs.disconnect();
+        }
+      });
+    }, { threshold: 0.2 });
+    
+    obs.observe(mapCard);
+    
+    function initMap() {
+      mapCard.classList.add('map-ready');
+      
+      const map = L.map(mapEl, {
+        scrollWheelZoom: false,
+        attributionControl: true
+      }).setView([LIVE_LOCATION.lat, LIVE_LOCATION.lng], 13);
+      
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+        maxZoom: 19,
+        attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+      }).addTo(map);
+      
+      L.marker([LIVE_LOCATION.lat, LIVE_LOCATION.lng])
+        .addTo(map)
+        .bindPopup(`<strong>Sweet Wheels</strong><br>${LIVE_LOCATION.label}`)
+        .openPopup();
+      
+      new ResizeObserver(() => map.invalidateSize()).observe(mapEl);
+    }
+    
+    // ===== SPINNER LOGIC =====
+    const slices = [
+      { label: '10% Off', color: '#FFE2AF' },
+      { label: '15% Off', color: '#C6F0D0' },
+      { label: '20% Off', color: '#FFD99A' },
+      { label: 'BOGO 50% Off', color: '#D6D4FF' },
+      { label: 'Free Topping', color: '#FFC9D8' },
+      { label: 'Free Small Dessert', color: '#B9E6FF' }
+    ];
+    
+    const N = slices.length;
+    const TAU = Math.PI * 2;
+    const pointerAngle = -Math.PI / 2;
+    const TURNS_MIN = 6;
+    const TURNS_MAX = 8;
+    
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas.getContext('2d', { alpha: true });
+    const spinBtn = document.getElementById('spin-btn');
+    const status = document.getElementById('status');
+    
+    let rotation = 0;
+    let spinning = false;
+    let highlightIndex = null;
+    
+    // Utility functions
+    const normalize = a => ((a % TAU) + TAU) % TAU;
+    const rand = () => (crypto?.getRandomValues 
+      ? (crypto.getRandomValues(new Uint32Array(1))[0] + 1) / 4294967297 
+      : Math.random());
+    
+    function textColor(hex) {
+      const c = hex.replace('#', '');
+      const r = parseInt(c.slice(0, 2), 16) || 255;
+      const g = parseInt(c.slice(2, 4), 16) || 255;
+      const b = parseInt(c.slice(4, 6), 16) || 255;
+      const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return L > 170 ? '#24324a' : '#ffffff';
+    }
+    
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      
+      for (let n = 0; n < words.length; n++) {
+        const test = line + (line ? ' ' : '') + words[n];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = words[n];
+        } else {
+          line = test;
+        }
+      }
+      lines.push(line);
+      
+      const totalH = lines.length * lineHeight;
+      let yy = y - totalH / 2 + lineHeight / 2;
+      
+      for (const ln of lines) {
+        ctx.fillText(ln, x, yy);
+        yy += lineHeight;
+      }
+    }
+    
+    function resizeCanvas() {
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      draw();
+    }
+    
+    function draw() {
+      const { width, height } = canvas.getBoundingClientRect();
+      const cx = width / 2;
+      const cy = height / 2;
+      const r = Math.min(width, height) / 2 - 6;
+      
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      
+      const step = TAU / N;
+      
+      // Draw slices
+      for (let i = 0; i < N; i++) {
+        const a0 = i * step;
+        const a1 = a0 + step;
+        const mid = a0 + step / 2;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, r, a0, a1, false);
+        ctx.closePath();
+        ctx.fillStyle = slices[i].color;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(30,48,90,.20)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw label
+        ctx.save();
+        ctx.rotate(mid);
+        ctx.translate(r * 0.60, 0);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillStyle = textColor(slices[i].color);
+        const base = Math.max(11, Math.round(r * 0.088));
+        ctx.font = `600 ${base}px Poppins, Inter, system-ui`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        wrapText(ctx, slices[i].label, 0, 0, r * 0.50, Math.round(base * 1.2));
+        ctx.restore();
+      }
+      
+      // Highlight winner
+      if (highlightIndex !== null) {
+        const start = highlightIndex * step + 0.08;
+        const end = (highlightIndex + 1) * step - 0.08;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, r - 4, start, end);
+        ctx.strokeStyle = '#FFC9A6';
+        ctx.shadowColor = 'rgba(255,180,140,.55)';
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        ctx.restore();
+      }
+      
+      ctx.restore();
+    }
+    
+    function animateTo(from, to, duration, ease, done) {
+      const t0 = performance.now();
+      
+      function frame(now) {
+        const t = Math.min(1, (now - t0) / duration);
+        rotation = from + (to - from) * ease(t);
+        draw();
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else if (done) {
+          done();
+        }
+      }
+      
+      requestAnimationFrame(frame);
+    }
+    
+    function spin() {
+      if (spinning) return;
+      
+      spinning = true;
+      spinBtn.disabled = true;
+      status.textContent = 'Spinning…';
+      highlightIndex = null;
+      draw();
+      
+      const winner = Math.floor(rand() * N);
+      const step = TAU / N;
+      const centerAngle = winner * step + step / 2;
+      
+      const turns = TURNS_MIN + Math.floor(rand() * (TURNS_MAX - TURNS_MIN + 1));
+      const rmod = normalize(rotation);
+      const alignDelta = (pointerAngle - centerAngle) - rmod;
+      const target = rotation + (turns * TAU) + alignDelta;
+      
+      animateTo(rotation, target, 4200 + rand() * 800, t => 1 - Math.pow(1 - t, 5), () => {
+        rotation = normalize(pointerAngle - centerAngle);
+        const under = normalize(pointerAngle - rotation);
+        const landed = Math.floor(under / step) % N;
+        
+        highlightIndex = landed;
+        draw();
+        status.innerHTML = `Winner: <strong>${slices[landed].label}</strong>`;
+        spinning = false;
+        spinBtn.disabled = false;
+      });
+    }
+    
+    // Initialize spinner
+    spinBtn.addEventListener('click', spin);
+    new ResizeObserver(resizeCanvas).observe(canvas);
+    requestAnimationFrame(resizeCanvas);
+    
+    if (document.fonts) {
+      document.fonts.ready.then(() => requestAnimationFrame(resizeCanvas));
+    }
+  </script>
+</body>
+</html>
