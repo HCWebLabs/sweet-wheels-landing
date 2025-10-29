@@ -229,6 +229,42 @@
       .brand i { animation: none; }
     }
     
+    .nav-links {
+      display: none;
+      gap: var(--spacing-md);
+      align-items: center;
+    }
+    
+    @media (min-width: 768px) {
+      .nav-links {
+        display: flex;
+      }
+    }
+    
+    .nav-links a {
+      font-weight: 600;
+      font-size: clamp(14px, 1.8vw, 16px);
+      transition: color var(--transition-fast);
+      position: relative;
+      padding: 8px 4px;
+    }
+    
+    .nav-links a::after {
+      content: "";
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--cta-start), var(--cta-end));
+      transform: scaleX(0);
+      transition: transform var(--transition-fast);
+    }
+    
+    .nav-links a:hover::after {
+      transform: scaleX(1);
+    }
+    
     .social {
       display: flex;
       gap: var(--spacing-xs);
@@ -673,8 +709,38 @@
       text-align: center;
     }
     
+    .readout:focus {
+      outline: none;
+      box-shadow: 0 6px 16px rgba(150,170,210,.25), var(--ring);
+    }
+    
     .readout strong {
       color: #ff7fb5;
+    }
+    
+    /* Confetti animation */
+    @keyframes confetti-fall {
+      0% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+        opacity: 1; 
+      }
+      100% { 
+        transform: translateY(400px) rotate(720deg) scale(0.5); 
+        opacity: 0; 
+      }
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      border-radius: 2px;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .confetti { display: none; }
     }
     
     /* ===== FOOTER ===== */
@@ -721,11 +787,19 @@
   
   <header role="banner">
     <div class="container header-bar">
-      <a class="brand" href="#top">
+      <a class="brand" href="sweet-wheels-homepage.html">
         <i class="fa-solid fa-ice-cream" aria-hidden="true"></i>
         <span>Sweet Wheels</span>
       </a>
-      <nav class="social" aria-label="Social media links">
+      
+      <nav class="nav-links" aria-label="Main navigation">
+        <a href="./index.html">Home</a>
+        <a href="sweet-wheels-homepage.html#about">About</a>
+        <a href="sweet-wheels-homepage.html#flavors">Flavors</a>
+        <a href="#route">Find Us</a>
+      </nav>
+      
+      <div class="social" aria-label="Social media links">
         <a href="https://instagram.com" aria-label="Follow us on Instagram" target="_blank" rel="noopener noreferrer">
           <i class="fa-brands fa-instagram" aria-hidden="true"></i>
         </a>
@@ -735,7 +809,7 @@
         <a href="https://facebook.com" aria-label="Follow us on Facebook" target="_blank" rel="noopener noreferrer">
           <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
         </a>
-      </nav>
+      </div>
     </div>
   </header>
   
@@ -820,7 +894,7 @@
         </aside>
         
         <!-- Spinner -->
-        <section id="spinner-container" class="spin-wheel" aria-label="Promotional discount wheel">
+        <div id="spinner-container" class="spin-wheel" aria-label="Promotional discount wheel">
           <div class="wheel-stack">
             <i class="fa-solid fa-caret-down pointer" aria-hidden="true"></i>
             <span class="inner-ring" aria-hidden="true"></span>
@@ -833,9 +907,9 @@
               <i class="fa-solid fa-rotate" aria-hidden="true"></i>
               <span>Spin</span>
             </button>
-            <span class="readout" role="status" aria-live="polite" id="status">Ready to spin!</span>
+            <span class="readout" role="status" aria-live="polite" aria-atomic="true" id="status" tabindex="-1">Ready to spin!</span>
           </div>
-        </section>
+        </div>
       </div>
     </section>
   </main>
