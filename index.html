@@ -748,8 +748,38 @@
       text-align: center;
     }
     
+    .readout:focus {
+      outline: none;
+      box-shadow: 0 6px 16px rgba(150,170,210,.25), var(--ring);
+    }
+    
     .readout strong {
       color: #ff7fb5;
+    }
+    
+    /* Confetti animation */
+    @keyframes confetti-fall {
+      0% { 
+        transform: translateY(0) rotate(0deg) scale(1); 
+        opacity: 1; 
+      }
+      100% { 
+        transform: translateY(400px) rotate(720deg) scale(0.5); 
+        opacity: 0; 
+      }
+    }
+    
+    .confetti {
+      position: fixed;
+      width: 12px;
+      height: 12px;
+      pointer-events: none;
+      z-index: 1000;
+      border-radius: 2px;
+    }
+    
+    @media (prefers-reduced-motion: reduce) {
+      .confetti { display: none; }
     }
     
     /* ===== CTA SECTION ===== */
@@ -835,7 +865,7 @@
       <nav class="nav-links" aria-label="Main navigation">
         <a href="#about">About</a>
         <a href="#flavors">Flavors</a>
-        <a href="./sweet-wheels-landing.html">Find Us</a>
+        <a href="sweet-wheels-landing.html">Find Us</a>
       </nav>
       
       <div class="social" aria-label="Social media links">
@@ -1050,6 +1080,50 @@
       </div>
     </section>
     
+    <!-- SPINNER -->
+    <section class="spinner-section" id="spin" aria-labelledby="spinner-title">
+      <div class="container">
+        <div class="section-header">
+          <h2 id="spinner-title">Spin to Win a Sweet Deal!</h2>
+          <p>Try your luck and unlock exclusive discounts on your next visit.</p>
+        </div>
+        
+        <div class="spinner-layout">
+          <!-- Instructions -->
+          <div class="spinner-intro card">
+            <h3>How it works</h3>
+            <ol>
+              <li>Tap <strong>SPIN</strong> to try your luck.</li>
+              <li>Show your winning message at the truck.</li>
+              <li>One spin per guest · Select items · Not combinable with other offers.</li>
+            </ol>
+            <a class="btn btn-cta" href="sweet-wheels-landing.html">
+              <i class="fa-solid fa-map-location-dot" aria-hidden="true"></i>
+              <span>Find Our Truck</span>
+            </a>
+          </div>
+          
+          <!-- Spinner -->
+          <div id="spinner-container" class="card" aria-label="Promotional discount wheel">
+            <div class="wheel-stack">
+              <i class="fa-solid fa-caret-down pointer" aria-hidden="true"></i>
+              <span class="inner-ring" aria-hidden="true"></span>
+              <canvas id="wheel-canvas" aria-hidden="true"></canvas>
+              <div class="cap" aria-hidden="true"></div>
+            </div>
+            
+            <div class="spinner-controls">
+              <button class="btn btn-cta" id="spin-btn" type="button">
+                <i class="fa-solid fa-rotate" aria-hidden="true"></i>
+                <span>Spin</span>
+              </button>
+              <span class="readout" role="status" aria-live="polite" aria-atomic="true" id="status" tabindex="-1">Ready to spin!</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
     <!-- CTA -->
     <section class="cta-section" aria-labelledby="cta-title">
       <div class="container">
@@ -1135,6 +1209,315 @@
         el.style.transform = 'none';
         el.style.transition = 'none';
       });
+    }
+    
+    // ===== SPINNER LOGIC =====
+    const slices = [
+      { label: '10% Off', color: '#FFE2AF' },
+      { label: '15% Off', color: '#C6F0D0' },
+      { label: '20% Off', color: '#FFD99A' },
+      { label: 'BOGO 50% Off', color: '#D6D4FF' },
+      { label: 'Free Topping', color: '#FFC9D8' },
+      { label: 'Free Small Dessert', color: '#B9E6FF' }
+    ];
+    
+    const N = slices.length;
+    const TAU = Math.PI * 2;
+    const pointerAngle = -Math.PI / 2;
+    const TURNS_MIN = 6;
+    const TURNS_MAX = 8;
+    
+    const canvas = document.getElementById('wheel-canvas');
+    const ctx = canvas ? canvas.getContext('2d', { alpha: true }) : null;
+    const spinBtn = document.getElementById('spin-btn');
+    const status = document.getElementById('status');
+    
+    let rotation = 0;
+    let spinning = false;
+    let highlightIndex = null;
+    
+    // Check for reduced motion preference
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    
+    // Utility functions
+    const normalize = a => ((a % TAU) + TAU) % TAU;
+    const rand = () => (crypto?.getRandomValues 
+      ? (crypto.getRandomValues(new Uint32Array(1))[0] + 1) / 4294967297 
+      : Math.random());
+    
+    // Haptic feedback helper
+    function hapticFeedback(pattern) {
+      if ('vibrate' in navigator && !prefersReducedMotion) {
+        navigator.vibrate(pattern);
+      }
+    }
+    
+    // Confetti burst effect
+    function createConfetti() {
+      if (prefersReducedMotion) return;
+      
+      const spinnerContainer = document.getElementById('spinner-container');
+      if (!spinnerContainer) return;
+      
+      const colors = ['#FFE2AF', '#C6F0D0', '#FFD99A', '#D6D4FF', '#FFC9D8', '#B9E6FF'];
+      const confettiCount = 30;
+      
+      for (let i = 0; i < confettiCount; i++) {
+        const confetti = document.createElement('div');
+        confetti.className = 'confetti';
+        confetti.style.left = `${50 + (Math.random() - 0.5) * 60}%`;
+        confetti.style.top = '50%';
+        confetti.style.background = colors[Math.floor(Math.random() * colors.length)];
+        confetti.style.animation = `confetti-fall ${1 + Math.random()}s ease-out forwards`;
+        confetti.style.animationDelay = `${Math.random() * 0.2}s`;
+        
+        spinnerContainer.appendChild(confetti);
+        
+        setTimeout(() => confetti.remove(), 1500);
+      }
+    }
+    
+    // Audio feedback (lightweight)
+    function playSound(type) {
+      if (prefersReducedMotion) return;
+      
+      const audioContext = window.AudioContext || window.webkitAudioContext;
+      if (!audioContext) return;
+      
+      try {
+        const ctx = new audioContext();
+        const oscillator = ctx.createOscillator();
+        const gainNode = ctx.createGain();
+        
+        oscillator.connect(gainNode);
+        gainNode.connect(ctx.destination);
+        
+        if (type === 'win') {
+          // Happy ascending tones
+          oscillator.frequency.setValueAtTime(523.25, ctx.currentTime); // C5
+          oscillator.frequency.setValueAtTime(659.25, ctx.currentTime + 0.1); // E5
+          oscillator.frequency.setValueAtTime(783.99, ctx.currentTime + 0.2); // G5
+          gainNode.gain.setValueAtTime(0.1, ctx.currentTime);
+          gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
+          oscillator.start(ctx.currentTime);
+          oscillator.stop(ctx.currentTime + 0.3);
+        }
+      } catch (e) {
+        // Silently fail if audio context not available
+      }
+    }
+    
+    function textColor(hex) {
+      const c = hex.replace('#', '');
+      const r = parseInt(c.slice(0, 2), 16) || 255;
+      const g = parseInt(c.slice(2, 4), 16) || 255;
+      const b = parseInt(c.slice(4, 6), 16) || 255;
+      const L = 0.2126 * r + 0.7152 * g + 0.0722 * b;
+      return L > 170 ? '#24324a' : '#ffffff';
+    }
+    
+    function wrapText(ctx, text, x, y, maxWidth, lineHeight) {
+      const words = text.split(' ');
+      let line = '';
+      const lines = [];
+      
+      for (let n = 0; n < words.length; n++) {
+        const test = line + (line ? ' ' : '') + words[n];
+        if (ctx.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = words[n];
+        } else {
+          line = test;
+        }
+      }
+      lines.push(line);
+      
+      const totalH = lines.length * lineHeight;
+      let yy = y - totalH / 2 + lineHeight / 2;
+      
+      for (const ln of lines) {
+        ctx.fillText(ln, x, yy);
+        yy += lineHeight;
+      }
+    }
+    
+    function resizeCanvas() {
+      if (!canvas || !ctx) return;
+      
+      const dpr = Math.max(1, window.devicePixelRatio || 1);
+      const { width, height } = canvas.getBoundingClientRect();
+      canvas.width = Math.round(width * dpr);
+      canvas.height = Math.round(height * dpr);
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.scale(dpr, dpr);
+      draw();
+    }
+    
+    function draw() {
+      if (!canvas || !ctx) return;
+      
+      const { width, height } = canvas.getBoundingClientRect();
+      const cx = width / 2;
+      const cy = height / 2;
+      const r = Math.min(width, height) / 2 - 6;
+      
+      ctx.clearRect(0, 0, width, height);
+      ctx.save();
+      ctx.translate(cx, cy);
+      ctx.rotate(rotation);
+      
+      const step = TAU / N;
+      
+      // Draw slices
+      for (let i = 0; i < N; i++) {
+        const a0 = i * step;
+        const a1 = a0 + step;
+        const mid = a0 + step / 2;
+        
+        ctx.beginPath();
+        ctx.moveTo(0, 0);
+        ctx.arc(0, 0, r, a0, a1, false);
+        ctx.closePath();
+        ctx.fillStyle = slices[i].color;
+        ctx.fill();
+        ctx.strokeStyle = 'rgba(30,48,90,.20)';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        
+        // Draw label
+        ctx.save();
+        ctx.rotate(mid);
+        ctx.translate(r * 0.60, 0);
+        ctx.rotate(Math.PI / 2);
+        ctx.fillStyle = textColor(slices[i].color);
+        const base = Math.max(11, Math.round(r * 0.088));
+        // Fallback font stack with web-safe fonts
+        ctx.font = `600 ${base}px Poppins, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        wrapText(ctx, slices[i].label, 0, 0, r * 0.50, Math.round(base * 1.2));
+        ctx.restore();
+      }
+      
+      // Highlight winner
+      if (highlightIndex !== null) {
+        const start = highlightIndex * step + 0.08;
+        const end = (highlightIndex + 1) * step - 0.08;
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(0, 0, r - 4, start, end);
+        ctx.strokeStyle = '#FFC9A6';
+        ctx.shadowColor = 'rgba(255,180,140,.55)';
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 6;
+        ctx.stroke();
+        ctx.restore();
+      }
+      
+      ctx.restore();
+    }
+    
+    function animateTo(from, to, duration, ease, done) {
+      const t0 = performance.now();
+      
+      function frame(now) {
+        const t = Math.min(1, (now - t0) / duration);
+        rotation = from + (to - from) * ease(t);
+        draw();
+        if (t < 1) {
+          requestAnimationFrame(frame);
+        } else if (done) {
+          done();
+        }
+      }
+      
+      requestAnimationFrame(frame);
+    }
+    
+    function spin() {
+      if (spinning || !canvas || !ctx) return;
+      
+      spinning = true;
+      spinBtn.disabled = true;
+      spinBtn.setAttribute('aria-label', 'Spinning wheel, please wait');
+      status.textContent = 'Spinning…';
+      highlightIndex = null;
+      draw();
+      
+      // Light haptic on start
+      hapticFeedback(50);
+      
+      const winner = Math.floor(rand() * N);
+      const step = TAU / N;
+      const centerAngle = winner * step + step / 2;
+      
+      const turns = TURNS_MIN + Math.floor(rand() * (TURNS_MAX - TURNS_MIN + 1));
+      const rmod = normalize(rotation);
+      const alignDelta = (pointerAngle - centerAngle) - rmod;
+      const target = rotation + (turns * TAU) + alignDelta;
+      
+      animateTo(rotation, target, prefersReducedMotion ? 1000 : 4200 + rand() * 800, t => 1 - Math.pow(1 - t, 5), () => {
+        rotation = normalize(pointerAngle - centerAngle);
+        const under = normalize(pointerAngle - rotation);
+        const landed = Math.floor(under / step) % N;
+        
+        highlightIndex = landed;
+        draw();
+        
+        // Enhanced accessibility announcement
+        status.innerHTML = `<span class="sr-only">Congratulations! You won </span>Winner: <strong>${slices[landed].label}</strong><span class="sr-only">. Show this message at the truck to redeem your discount.</span>`;
+        
+        // Focus the result for keyboard users
+        setTimeout(() => {
+          status.focus();
+        }, 100);
+        
+        // Victory feedback
+        hapticFeedback([100, 50, 100]); // Pattern: vibrate, pause, vibrate
+        playSound('win');
+        createConfetti();
+        
+        spinning = false;
+        spinBtn.disabled = false;
+        spinBtn.setAttribute('aria-label', 'Spin the wheel again');
+      });
+    }
+    
+    // Initialize spinner
+    if (canvas && spinBtn && status) {
+      spinBtn.addEventListener('click', spin);
+      spinBtn.setAttribute('aria-label', 'Spin the wheel to win a discount');
+      
+      new ResizeObserver(resizeCanvas).observe(canvas);
+      requestAnimationFrame(resizeCanvas);
+      
+      // Handle font loading with fallback
+      if (document.fonts) {
+        document.fonts.ready.then(() => {
+          requestAnimationFrame(resizeCanvas);
+        });
+        
+        // Also redraw if specific font loads later
+        document.fonts.load('600 16px Poppins').then(() => {
+          requestAnimationFrame(resizeCanvas);
+        }).catch(() => {
+          // Font failed to load, but we have fallbacks
+          requestAnimationFrame(resizeCanvas);
+        });
+      }
+      
+      // Handle very small screens
+      const handleSmallScreen = () => {
+        if (window.innerWidth < 320) {
+          const container = document.getElementById('spinner-container');
+          if (container) {
+            container.style.minWidth = '280px';
+          }
+        }
+      };
+      
+      handleSmallScreen();
+      window.addEventListener('resize', handleSmallScreen);
     }
   </script>
 </body>
