@@ -240,10 +240,12 @@
         #fff8fc 100%);
       border-left: 1px solid rgba(255,127,181,.2);
       box-shadow: -16px 0 48px rgba(0,0,0,.15);
-      padding: 5.5rem 1.75rem 2rem;
+      padding: 2rem 1.75rem;
       display: flex;
       flex-direction: column;
-      gap: 0.625rem;
+      justify-content: center;
+      align-items: stretch;
+      gap: 0.875rem;
       transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1);
       z-index: 99;
       overflow-y: auto;
@@ -256,76 +258,114 @@
     .nav-links a {
       font-family: 'Inter', sans-serif;
       font-weight: 600;
-      font-size: 1rem;
+      font-size: 1.125rem;
       letter-spacing: -0.01em;
-      padding: 1rem 1.25rem;
-      border-radius: 14px;
-      transition: all 0.2s ease;
+      padding: 1.125rem 1.5rem;
+      border-radius: 16px;
+      transition: all 0.3s ease;
       display: flex;
       align-items: center;
-      gap: 0.875rem;
-      background: transparent;
-      color: #5a4a6a;
+      gap: 1rem;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .6), rgba(255, 250, 255, .4));
+      color: var(--ink);
       position: relative;
-      border: 1.5px solid transparent;
+      border: 2px solid rgba(255, 127, 181, .2);
+      box-shadow: 0 2px 8px rgba(255, 127, 181, .1);
+      overflow: hidden;
+    }
+    
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 127, 181, .15), rgba(167, 139, 250, .15));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .nav-links a:hover::before {
+      opacity: 1;
     }
     
     .nav-links a:hover,
     .nav-links a:focus {
-      background: rgba(255,127,181,.08);
-      border-color: rgba(255,127,181,.2);
-      transform: translateX(-4px);
-      color: #ff7fb5;
+      border-color: rgba(255, 127, 181, .5);
+      transform: translateX(-6px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(255, 127, 181, .25);
     }
     
     .nav-links a:active {
-      transform: translateX(-2px);
-      background: rgba(255,127,181,.12);
+      transform: translateX(-4px) scale(0.98);
     }
     
     .nav-links a i {
-      font-size: 1.25rem;
+      font-size: 1.5rem;
       color: #ff7fb5;
       display: flex;
       align-items: center;
       justify-content: center;
-      min-width: 1.25rem;
+      min-width: 1.5rem;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .nav-links a:hover i {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 2px 8px rgba(255, 127, 181, .4));
     }
     
     .nav-links a span {
       font-weight: 600;
+      position: relative;
+      z-index: 1;
     }
     
     .nav-social {
       display: flex;
-      gap: 0.75rem;
-      margin-top: auto;
-      padding-top: 1.75rem;
-      border-top: 1px solid rgba(255,127,181,.15);
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(255,127,181,.2);
       justify-content: center;
     }
     
     .nav-social a {
-      width: 44px;
-      height: 44px;
+      width: 52px;
+      height: 52px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(255,127,181,.1);
-      border: 1.5px solid rgba(255,127,181,.2);
-      border-radius: 12px;
-      font-size: 1.125rem;
+      background: linear-gradient(135deg, rgba(255, 127, 181, .2), rgba(167, 139, 250, .2));
+      border: 2px solid rgba(255, 127, 181, .3);
+      border-radius: 14px;
+      font-size: 1.375rem;
       color: #ff7fb5;
-      transition: all 0.2s ease;
+      transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(255, 127, 181, .15);
       flex-shrink: 0;
+    }
+    
+    .nav-social a i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
     
     .nav-social a:hover {
       background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
       color: var(--white);
-      transform: translateY(-3px);
-      box-shadow: 0 6px 16px rgba(255,127,181,.3);
+      transform: translateY(-8px) rotate(5deg) scale(1.1);
+      box-shadow: 0 12px 24px rgba(255, 127, 181, .4);
       border-color: transparent;
+    }
+    
+    .nav-social a:hover i {
+      color: var(--white);
+    }
+    
+    .nav-social a:active {
+      transform: translateY(-4px) scale(1.05);
     }
     
     .nav-social a:active {
