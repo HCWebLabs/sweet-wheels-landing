@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sweet Wheels | Artisan Desserts on Wheels</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
+  
+  <style>
+    /* ===== RESET & BASE ===== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+      --pink: #ffbedc;
+      --mint: #d4f4dd;
+      --sky: #b9e6ff;
+      --lilac: #d6d4ff;
+      --white: #fff;
+      --ink: #24324a;
+      --muted: #5a6b85;
+      --card: rgba(255, 255, 255, .75);
+      --card-border: rgba(255, 255, 255, .4);
+      --cta-start: #ff7fb5;
+      --cta-end: #a78bfa;
+      --shadow: 0 4px 12px rgba(24, 33, 56, .08);
+      --shadow-md: 0 8px 20px rgba(24, 33, 56, .12);
+      --shadow-lg: 0 12px 32px rgba(24, 33, 56, .15);
+      --transition-fast: .2s ease;
+      --transition-base: .3s ease;
+    }
+    
+    html {
+      scroll-behavior: smooth;
+    }
+    
+    body {
+      min-height: 100vh;
+      font-family: Inter, sans-serif;
+      font-size: clamp(14px, 1.2vw + .5rem, 16px);
+      line-height: 1.4;
+      color: var(--ink);
+      background: linear-gradient(180deg, var(--pink) 0%, var(--mint) 40%, var(--sky) 75%, var(--lilac) 100%) fixed;
+      overflow-x: hidden;
+    }
+    
+    h1, h2, h3, h4 {
+      font-weight: 700;
+      line-height: 1.2;
+    }
+    
+    a {
+      text-decoration: none;
+      color: inherit;
+    }
+    
+    img {
+      max-width: 100%;
+      height: auto;
+      display: block;
+    }
+    
+    button {
+      font-family: inherit;
+    }
+    
+    .container {
+      width: 100%;
+      max-width: 1280px;
+      margin: 0 auto;
+      padding: 0 clamp(1rem, 4vw, 2rem);
+    }
+    
+    /* ===== HEADER & NAVIGATION ===== */
+    header {
+      padding: clamp(1rem, 2.5vw, 1.25rem) 0;
+      background: rgba(255, 255, 255, .7);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      backdrop-filter: blur(12px) saturate(1.2);
+      -webkit-backdrop-filter: blur(12px) saturate(1.2);
+      border-bottom: 1px solid rgba(255, 127, 181, .25);
+    }
+    
+    .header-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+    
+    .brand {
+      font-family: Pacifico, cursive;
+      font-size: clamp(1.25rem, 2vw + .5rem, 1.75rem);
+      color: #ff7fb5;
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      line-height: 1;
+      text-shadow: 0 2px 4px rgba(255, 127, 181, .2);
+      transition: transform var(--transition-fast);
+      z-index: 101;
+    }
+    
+    .brand:hover {
+      transform: translateY(-1px);
+    }
+    
+    .brand i {
+      font-size: 1.2em;
+    }
+    
+    .menu-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      background: rgba(255, 127, 181, .15);
+      border: 1px solid rgba(255, 127, 181, .3);
+      border-radius: 12px;
+      cursor: pointer;
+      padding: 0;
+      z-index: 101;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+    
+    .menu-toggle:hover {
+      background: rgba(255, 127, 181, .25);
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(255, 127, 181, .2);
+    }
+    
+    .menu-toggle i {
+      font-size: 1.25rem;
+      color: #ff7fb5;
+      position: absolute;
+      transition: all var(--transition-fast);
+    }
+    
+    .menu-toggle .fa-bars {
+      opacity: 1;
+      transform: rotate(0);
+    }
+    
+    .menu-toggle .fa-xmark {
+      opacity: 0;
+      transform: rotate(90deg);
+    }
+    
+    .menu-toggle.active .fa-bars {
+      opacity: 0;
+      transform: rotate(-90deg);
+    }
+    
+    .menu-toggle.active .fa-xmark {
+      opacity: 1;
+      transform: rotate(0);
+    }
+    
+    .nav-links {
+      position: fixed;
+      top: 0;
+      right: -100%;
+      width: min(320px, 85vw);
+      height: 100vh;
+      background: linear-gradient(180deg, #fff 0%, #fff8fc 100%);
+      border-left: 1px solid rgba(255, 127, 181, .2);
+      box-shadow: -16px 0 48px rgba(0, 0, 0, .15);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: stretch;
+      gap: .875rem;
+      transition: right .35s cubic-bezier(.4, 0, .2, 1);
+      z-index: 99;
+      overflow-y: auto;
+    }
+    
+    .nav-links.active {
+      right: 0;
+    }
+    
+    .nav-links a {
+      font-weight: 600;
+      font-size: 1.125rem;
+      letter-spacing: -.01em;
+      padding: 1.125rem 1.5rem;
+      border-radius: 16px;
+      transition: all .3s ease;
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .6), rgba(255, 250, 255, .4));
+      color: var(--ink);
+      border: 2px solid rgba(255, 127, 181, .2);
+      box-shadow: 0 2px 8px rgba(255, 127, 181, .1);
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .nav-links a::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(255, 127, 181, .15), rgba(167, 139, 250, .15));
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+    
+    .nav-links a:hover::before {
+      opacity: 1;
+    }
+    
+    .nav-links a:hover {
+      border-color: rgba(255, 127, 181, .5);
+      transform: translateX(-6px) scale(1.02);
+      box-shadow: 0 6px 20px rgba(255, 127, 181, .25);
+    }
+    
+    .nav-links a:active {
+      transform: translateX(-4px) scale(0.98);
+    }
+    
+    .nav-links a i {
+      font-size: 1.5rem;
+      color: #ff7fb5;
+      min-width: 1.5rem;
+      transition: all .3s ease;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .nav-links a:hover i {
+      transform: scale(1.15) rotate(5deg);
+      filter: drop-shadow(0 2px 8px rgba(255, 127, 181, .4));
+    }
+    
+    .nav-links a span {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .nav-social {
+      display: flex;
+      gap: 1rem;
+      margin-top: 2rem;
+      padding-top: 2rem;
+      border-top: 2px solid rgba(255, 127, 181, .2);
+      justify-content: center;
+    }
+    
+    .nav-social a {
+      width: 52px;
+      height: 52px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, rgba(255, 127, 181, .2), rgba(167, 139, 250, .2));
+      border: 2px solid rgba(255, 127, 181, .3);
+      border-radius: 14px;
+      font-size: 1.375rem;
+      color: #ff7fb5;
+      transition: all .3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      box-shadow: 0 4px 12px rgba(255, 127, 181, .15);
+    }
+    
+    .nav-social a i {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .nav-social a:hover {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      color: var(--white);
+      transform: translateY(-8px) rotate(5deg) scale(1.1);
+      box-shadow: 0 12px 24px rgba(255, 127, 181, .4);
+      border-color: transparent;
+    }
+    
+    .nav-social a:hover i {
+      color: var(--white);
+    }
+    
+    .nav-social a:active {
+      transform: translateY(-4px) scale(1.05);
+    }
+    
+    .nav-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .65);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity .3s ease-in-out;
+      z-index: 98;
+      cursor: pointer;
+    }
+    
+    .nav-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+    
+    @media (min-width: 768px) {
+      .menu-toggle {
+        display: none;
+      }
+      
+      .nav-links {
+        position: static;
+        width: auto;
+        height: auto;
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        padding: 6px;
+        flex-direction: row;
+        gap: clamp(.5rem, 2vw, 1rem);
+        align-items: center;
+      }
+      
+      .nav-links > a {
+        font-size: clamp(.875rem, 1.2vw + .4rem, 1rem);
+        font-weight: 600;
+        padding: .625rem 1rem;
+        position: relative;
+        color: #5a4a6a;
+        background: linear-gradient(135deg, rgba(255, 190, 220, .2), rgba(255, 127, 181, .2));
+        border-radius: 12px;
+        transition: all .2s ease;
+        box-shadow: 0 2px 8px rgba(255, 127, 181, .15);
+        line-height: 1.2;
+      }
+      
+      .nav-links > a i {
+        display: none;
+      }
+      
+      .nav-links > a:hover,
+      .nav-links > a:focus {
+        background: linear-gradient(135deg, rgba(205, 187, 255, .2), rgba(167, 139, 250, .2));
+        color: #5a4a6a;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(167, 139, 250, .25);
+      }
+      
+      .nav-links > a:active {
+        transform: translateY(0);
+      }
+      
+      .nav-social {
+        margin: 0;
+        padding: 0;
+        border: none;
+        gap: .5rem;
+      }
+      
+      .nav-social a {
+        width: 34px;
+        height: 34px;
+        font-size: .9375rem;
+        padding: 0;
+        border-radius: 10px;
+        border-width: 1.5px;
+      }
+      
+      .nav-social a i {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      
+      .nav-social a:hover {
+        transform: translateY(-2px);
+      }
+      
+      .nav-overlay {
+        display: none;
+      }
+      
+      .about-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    /* ===== HERO SECTION ===== */
+    .hero {
+      padding: clamp(3rem, 8vw, 6rem) 0;
+      text-align: center;
+    }
+    
+    .hero h1 {
+      font-family: Pacifico, cursive;
+      font-size: clamp(2.5rem, 5vw + 1rem, 4rem);
+      color: #ff7fb5;
+      margin-bottom: 1rem;
+      text-shadow: 0 4px 12px rgba(255, 127, 181, .3);
+    }
+    
+    .hero p {
+      font-size: clamp(1.125rem, 2vw + .5rem, 1.375rem);
+      color: var(--muted);
+      margin-bottom: 2rem;
+      max-width: 800px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    
+    .hero-cta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+      justify-content: center;
+    }
+    
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: .625rem;
+      padding: 1.125rem 2.25rem;
+      font-weight: 700;
+      font-size: 1.0625rem;
+      border-radius: 50px;
+      transition: all var(--transition-fast);
+      line-height: 1.2;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      color: var(--white);
+      box-shadow: 0 6px 20px rgba(255, 127, 181, .35);
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 32px rgba(255, 127, 181, .45);
+    }
+    
+    .btn-secondary {
+      background: rgba(255, 255, 255, .9);
+      color: #ff7fb5;
+      border: 2px solid rgba(255, 127, 181, .3);
+      box-shadow: 0 4px 12px rgba(255, 127, 181, .15);
+    }
+    
+    .btn-secondary:hover {
+      background: var(--white);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(255, 127, 181, .25);
+    }
+    
+    /* ===== FEATURES SECTION ===== */
+    .features {
+      padding: clamp(3rem, 8vw, 5rem) 0;
+    }
+    
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    .feature-card {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: clamp(2rem, 4vw, 2.5rem);
+      text-align: center;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow);
+    }
+    
+    .feature-card:hover {
+      transform: translateY(-6px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .feature-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1.5rem;
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 24px rgba(255, 127, 181, .3);
+    }
+    
+    .feature-icon i {
+      font-size: 2rem;
+      color: var(--white);
+    }
+    
+    .feature-card h3 {
+      font-size: clamp(1.125rem, 2vw + .5rem, 1.375rem);
+      color: var(--ink);
+      margin-bottom: .75rem;
+    }
+    
+    .feature-card p {
+      color: var(--muted);
+      margin: 0;
+      font-size: clamp(.875rem, 1.1vw + .4rem, .9375rem);
+    }
+    
+    /* ===== ABOUT SECTION ===== */
+    .about {
+      padding: clamp(3rem, 8vw, 5rem) 0;
+    }
+    
+    .about-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(2rem, 5vw, 3rem);
+      align-items: center;
+    }
+    
+    @media (min-width: 768px) {
+      .about-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+    
+    .about-image {
+      border-radius: 24px;
+      overflow: hidden;
+      box-shadow: 0 12px 40px rgba(255, 127, 181, .2);
+    }
+    
+    .about-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      min-height: 400px;
+    }
+    
+    .about-content h2 {
+      font-family: Pacifico, cursive;
+      font-size: clamp(2rem, 4vw + .5rem, 3rem);
+      color: #ff7fb5;
+      margin-bottom: 1rem;
+    }
+    
+    .about-content p {
+      color: var(--muted);
+      margin-bottom: 1.25rem;
+      font-size: clamp(.9375rem, 1.2vw + .4rem, 1.0625rem);
+    }
+    
+    .about-content p:last-of-type {
+      margin-bottom: 2rem;
+    }
+    
+    /* ===== MENU SECTION ===== */
+    .menu {
+      padding: clamp(3rem, 8vw, 5rem) 0;
+    }
+    
+    .section-header {
+      text-align: center;
+      margin-bottom: clamp(2rem, 5vw, 3rem);
+    }
+    
+    .section-header h2 {
+      font-family: Pacifico, cursive;
+      font-size: clamp(2rem, 4vw + .5rem, 3rem);
+      color: #ff7fb5;
+      margin-bottom: .75rem;
+    }
+    
+    .section-header p {
+      color: var(--muted);
+      font-size: clamp(.9375rem, 1.2vw + .4rem, 1.0625rem);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    .menu-item {
+      background: var(--card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all var(--transition-base);
+      box-shadow: var(--shadow);
+    }
+    
+    .menu-item:hover {
+      transform: translateY(-8px);
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .menu-item-image {
+      width: 100%;
+      height: 200px;
+      overflow: hidden;
+    }
+    
+    .menu-item-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform .5s ease;
+    }
+    
+    .menu-item:hover .menu-item-image img {
+      transform: scale(1.08);
+    }
+    
+    .menu-item-content {
+      padding: clamp(1.25rem, 3vw, 1.5rem);
+    }
+    
+    .menu-item-content h3 {
+      font-size: clamp(1.0625rem, 1.5vw + .5rem, 1.25rem);
+      color: var(--ink);
+      margin-bottom: .5rem;
+    }
+    
+    .menu-item-content p {
+      color: var(--muted);
+      margin: 0;
+      font-size: clamp(.8125rem, 1.1vw + .4rem, .9375rem);
+    }
+    
+    /* ===== TESTIMONIALS SECTION ===== */
+    .testimonials {
+      padding: clamp(3rem, 8vw, 5rem) 0;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .testimonials::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120%;
+      height: 100%;
+      background: radial-gradient(ellipse at center, rgba(255, 190, 220, .1) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    .testimonials .container {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .testimonial-carousel {
+      position: relative;
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 0 3.5rem;
+    }
+    
+    .testimonial-track {
+      overflow: hidden;
+      border-radius: 24px;
+      box-shadow: 0 12px 40px rgba(255, 127, 181, .15);
+    }
+    
+    .testimonial-slides {
+      display: flex;
+      transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .testimonial-slide {
+      min-width: 100%;
+      background: linear-gradient(135deg, rgba(255, 255, 255, .9) 0%, rgba(255, 250, 255, .85) 100%);
+      backdrop-filter: blur(30px);
+      -webkit-backdrop-filter: blur(30px);
+      border: 2px solid rgba(255, 255, 255, .6);
+      padding: clamp(2rem, 4vw, 2.75rem);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, .8);
+      text-align: center;
+      position: relative;
+    }
+    
+    .testimonial-slide::before {
+      content: '"';
+      position: absolute;
+      top: 0.5rem;
+      left: 1rem;
+      font-size: 4rem;
+      line-height: 1;
+      font-family: Georgia, serif;
+      color: rgba(255, 127, 181, .12);
+      font-weight: 700;
+      pointer-events: none;
+    }
+    
+    .testimonial-stars {
+      color: #fbbf24;
+      font-size: 1.25rem;
+      margin-bottom: 1.25rem;
+      display: flex;
+      justify-content: center;
+      gap: .25rem;
+      animation: fadeIn 0.6s ease-out;
+    }
+    
+    .testimonial-stars i {
+      filter: drop-shadow(0 2px 4px rgba(251, 191, 36, .3));
+      animation: starPop 0.4s ease-out backwards;
+    }
+    
+    .testimonial-stars i:nth-child(1) { animation-delay: 0.1s; }
+    .testimonial-stars i:nth-child(2) { animation-delay: 0.15s; }
+    .testimonial-stars i:nth-child(3) { animation-delay: 0.2s; }
+    .testimonial-stars i:nth-child(4) { animation-delay: 0.25s; }
+    .testimonial-stars i:nth-child(5) { animation-delay: 0.3s; }
+    
+    @keyframes starPop {
+      0% {
+        transform: scale(0) rotate(-180deg);
+        opacity: 0;
+      }
+      50% {
+        transform: scale(1.2) rotate(10deg);
+      }
+      100% {
+        transform: scale(1) rotate(0);
+        opacity: 1;
+      }
+    }
+    
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .testimonial-text {
+      color: var(--ink);
+      margin-bottom: 1.5rem;
+      font-style: italic;
+      font-size: clamp(1rem, 1.5vw + .4rem, 1.25rem);
+      line-height: 1.6;
+      max-width: 650px;
+      margin-left: auto;
+      margin-right: auto;
+      font-weight: 500;
+      position: relative;
+      z-index: 1;
+    }
+    
+    .testimonial-author {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+      justify-content: center;
+    }
+    
+    .testimonial-avatar {
+      width: 52px;
+      height: 52px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--white);
+      font-weight: 700;
+      font-size: 1.25rem;
+      box-shadow: 0 6px 16px rgba(255, 127, 181, .35), inset 0 -2px 8px rgba(0, 0, 0, .1);
+      border: 2px solid var(--white);
+    }
+    
+    .testimonial-info {
+      text-align: left;
+    }
+    
+    .testimonial-info h4 {
+      font-size: 1.0625rem;
+      color: var(--ink);
+      margin-bottom: .25rem;
+      font-weight: 700;
+    }
+    
+    .testimonial-info p {
+      font-size: .9375rem;
+      color: var(--muted);
+      margin: 0;
+      font-weight: 500;
+    }
+    
+    .carousel-nav {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      border: none;
+      border-radius: 50%;
+      color: var(--white);
+      font-size: 1.25rem;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      box-shadow: 0 6px 20px rgba(255, 127, 181, .4);
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .carousel-nav:hover {
+      transform: translateY(-50%) scale(1.1);
+      box-shadow: 0 8px 24px rgba(255, 127, 181, .55);
+    }
+    
+    .carousel-nav:active {
+      transform: translateY(-50%) scale(1.05);
+    }
+    
+    .carousel-prev {
+      left: 0;
+    }
+    
+    .carousel-next {
+      right: 0;
+    }
+    
+    .carousel-dots {
+      display: flex;
+      justify-content: center;
+      gap: .875rem;
+      margin-top: 2rem;
+    }
+    
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 127, 181, .25);
+      border: 2px solid transparent;
+      cursor: pointer;
+      transition: all var(--transition-base);
+      padding: 0;
+      position: relative;
+    }
+    
+    .carousel-dot::after {
+      content: '';
+      position: absolute;
+      inset: -3px;
+      border-radius: 50%;
+      border: 2px solid transparent;
+      transition: all var(--transition-base);
+    }
+    
+    .carousel-dot:hover {
+      background: rgba(255, 127, 181, .5);
+      transform: scale(1.3);
+    }
+    
+    .carousel-dot:hover::after {
+      border-color: rgba(255, 127, 181, .3);
+    }
+    
+    .carousel-dot.active {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      width: 32px;
+      border-radius: 6px;
+      box-shadow: 0 3px 8px rgba(255, 127, 181, .35);
+    }
+    
+    .carousel-dot.active::after {
+      border-radius: 8px;
+      border-color: rgba(255, 127, 181, .2);
+    }
+    
+    @media (max-width: 767px) {
+      .testimonial-carousel {
+        padding: 0 2.75rem;
+      }
+      
+      .carousel-nav {
+        width: 40px;
+        height: 40px;
+        font-size: 1rem;
+      }
+      
+      .testimonial-slide {
+        padding: clamp(1.5rem, 4vw, 2rem);
+      }
+      
+      .testimonial-slide::before {
+        font-size: 3rem;
+        top: 0.25rem;
+        left: 0.5rem;
+      }
+      
+      .testimonial-text {
+        font-size: clamp(.9375rem, 3vw, 1.125rem);
+        margin-bottom: 1.25rem;
+      }
+      
+      .testimonial-avatar {
+        width: 48px;
+        height: 48px;
+        font-size: 1.125rem;
+      }
+      
+      .carousel-dots {
+        gap: .625rem;
+        margin-top: 1.5rem;
+      }
+    }
+    
+    /* ===== CTA SECTION ===== */
+    .cta-section {
+      padding: clamp(3rem, 8vw, 5rem) 0;
+    }
+    
+    .cta-card {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      border-radius: 24px;
+      padding: clamp(3rem, 6vw, 4rem) clamp(2rem, 4vw, 3rem);
+      text-align: center;
+      box-shadow: 0 12px 40px rgba(255, 127, 181, .3);
+      color: var(--white);
+    }
+    
+    .cta-card h2 {
+      font-family: Pacifico, cursive;
+      font-size: clamp(2rem, 4vw + .5rem, 3rem);
+      margin-bottom: 1rem;
+    }
+    
+    .cta-card p {
+      font-size: clamp(1rem, 1.5vw + .5rem, 1.25rem);
+      margin-bottom: 2rem;
+      opacity: .95;
+    }
+    
+    .cta-card .btn {
+      background: var(--white);
+      color: #ff7fb5;
+    }
+    
+    .cta-card .btn:hover {
+      transform: translateY(-4px) scale(1.05);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, .2);
+    }
+    
+    /* ===== FOOTER ===== */
+    footer {
+      background: rgba(255, 255, 255, .6);
+      backdrop-filter: blur(20px);
+      padding: clamp(2rem, 5vw, 3rem) 0 clamp(1.25rem, 3vw, 1.75rem);
+      margin-top: clamp(2.5rem, 6vw, 4rem);
+      border-top: 1px solid rgba(255, 255, 255, .4);
+    }
+    
+    .footer-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: clamp(1.5rem, 4vw, 2.5rem);
+      margin-bottom: clamp(1.5rem, 3vw, 2rem);
+    }
+    
+    @media (min-width: 640px) {
+      .footer-grid {
+        grid-template-columns: 1.5fr 1fr 1fr;
+      }
+    }
+    
+    .footer-brand {
+      font-family: Pacifico, cursive;
+      font-size: clamp(1.25rem, 2vw + .5rem, 1.75rem);
+      color: #ff7fb5;
+      display: flex;
+      align-items: center;
+      gap: .5rem;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-brand i {
+      font-size: 1.2em;
+    }
+    
+    .footer-tagline {
+      color: var(--muted);
+      font-size: clamp(.8125rem, 1.1vw + .4rem, .875rem);
+      max-width: 320px;
+      margin-bottom: 1rem;
+    }
+    
+    .footer-section h4 {
+      font-size: 1rem;
+      color: var(--ink);
+      margin-bottom: 1rem;
+    }
+    
+    .footer-links {
+      display: flex;
+      flex-direction: column;
+      gap: .625rem;
+    }
+    
+    .footer-links a {
+      color: var(--muted);
+      font-size: .9375rem;
+      transition: color var(--transition-fast);
+    }
+    
+    .footer-links a:hover {
+      color: #ff7fb5;
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: .75rem;
+      flex-wrap: wrap;
+    }
+    
+    .footer-social a {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(255, 127, 181, .1);
+      border-radius: 10px;
+      color: #ff7fb5;
+      font-size: 1.125rem;
+      transition: all var(--transition-fast);
+    }
+    
+    .footer-social a:hover {
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      color: var(--white);
+      transform: translateY(-3px);
+    }
+    
+    .footer-bottom {
+      text-align: center;
+      padding-top: 1.5rem;
+      border-top: 1px solid rgba(255, 127, 181, .15);
+      color: var(--muted);
+      font-size: .875rem;
+    }
+    
+    /* ===== SCROLL TO TOP BUTTON ===== */
+    .scroll-top {
+      position: fixed;
+      bottom: clamp(1.25rem, 3vw, 2rem);
+      right: clamp(1.25rem, 3vw, 2rem);
+      width: clamp(44px, 10vw, 48px);
+      height: clamp(44px, 10vw, 48px);
+      background: linear-gradient(135deg, var(--cta-start), var(--cta-end));
+      color: var(--white);
+      border: none;
+      border-radius: 50%;
+      box-shadow: var(--shadow-lg);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: clamp(1.125rem, 2.5vw, 1.25rem);
+      opacity: 0;
+      visibility: hidden;
+      transform: translateY(20px);
+      transition: all var(--transition-base);
+      z-index: 90;
+    }
+    
+    .scroll-top.visible {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
+    
+    .scroll-top:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 24px 58px rgba(24, 33, 56, .22);
+    }
+  </style>
+</head>
+<body>
+  <div class="nav-overlay"></div>
+  
+  <header>
+    <div class="container header-bar">
+      <a href="/" class="brand">
+        <i class="fa-solid fa-ice-cream"></i>
+        <span>Sweet Wheels</span>
+      </a>
+      <button class="menu-toggle">
+        <i class="fa-solid fa-bars"></i>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <nav class="nav-links">
+        <a href="#about">
+          <i class="fa-solid fa-heart"></i>
+          <span>About</span>
+        </a>
+        <a href="#menu">
+          <i class="fa-solid fa-ice-cream"></i>
+          <span>Menu</span>
+        </a>
+        <a href="#testimonials">
+          <i class="fa-solid fa-star"></i>
+          <span>Reviews</span>
+        </a>
+        <a href="sweet-wheels-redesigned.html">
+          <i class="fa-solid fa-gift"></i>
+          <span>Win Prizes</span>
+        </a>
+        <div class="nav-social">
+          <a href="https://instagram.com/sweetwheelsknox" target="_blank" rel="noopener">
+            <i class="fa-brands fa-instagram"></i>
+          </a>
+          <a href="https://facebook.com/sweetwheelsknox" target="_blank" rel="noopener">
+            <i class="fa-brands fa-facebook"></i>
+          </a>
+          <a href="https://twitter.com/sweetwheelsknox" target="_blank" rel="noopener">
+            <i class="fa-brands fa-twitter"></i>
+          </a>
+        </div>
+      </nav>
+    </div>
+  </header>
+  
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h1>Artisan Desserts on Wheels!</h1>
+        <p>Bringing handcrafted cakes, cookies, pies, and ice cream to every corner of Knoxville. Made fresh daily with local ingredients and a whole lot of love.</p>
+        <div class="hero-cta">
+          <a href="sweet-wheels-redesigned.html" class="btn btn-primary">
+            <span>Find Our Truck</span>
+            <i class="fa-solid fa-location-dot"></i>
+          </a>
+          <a href="#menu" class="btn btn-secondary">
+            <span>View Menu</span>
+            <i class="fa-solid fa-arrow-down"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+    
+    <section class="features">
+      <div class="container">
+        <div class="features-grid">
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-leaf"></i>
+            </div>
+            <h3>Fresh & Local</h3>
+            <p>We source ingredients from local Tennessee farms and bake everything fresh daily.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-heart"></i>
+            </div>
+            <h3>Made with Love</h3>
+            <p>Every dessert is handcrafted with care, passion, and generations of family recipes.</p>
+          </div>
+          <div class="feature-card">
+            <div class="feature-icon">
+              <i class="fa-solid fa-truck"></i>
+            </div>
+            <h3>Delivered to You</h3>
+            <p>Our truck brings sweet treats directly to your neighborhood, workplace, or event!</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="about" class="about">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-image">
+            <img src="https://images.unsplash.com/photo-1486427944299-d1955d23e34d?w=800&q=80" alt="Fresh baked desserts" loading="lazy">
+          </div>
+          <div class="about-content">
+            <h2>Our Sweet Story</h2>
+            <p>Sweet Wheels was born from a simple dream: to share the joy of homemade desserts with our community. What started in a small kitchen has grown into Knoxville's favorite dessert truck!</p>
+            <p>We believe that life's sweetest moments deserve equally sweet treats. That's why we use only the finest ingredients, traditional baking methods, and a whole lot of heart in everything we create.</p>
+            <p>From our family to yours, thank you for letting us be part of your celebrations, everyday moments, and special occasions.</p>
+            <a href="sweet-wheels-redesigned.html" class="btn btn-primary">
+              <span>Visit Us Today</span>
+              <i class="fa-solid fa-arrow-right"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="menu" class="menu">
+      <div class="container">
+        <div class="section-header">
+          <h2>Our Menu</h2>
+          <p>Here are some of our most-loved treats that keep customers coming back!</p>
+        </div>
+        <div class="menu-grid">
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1578985545062-69928b1d9587?w=600&q=80" alt="Signature cakes" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Signature Cakes</h3>
+              <p>Moist, fluffy, and impossibly delicious. From classic vanilla to decadent chocolate ganache.</p>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1464349095431-e9a21285b5f3?w=600&q=80" alt="Artisan cookies" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Artisan Cookies</h3>
+              <p>Chewy centers, crispy edges, and loaded with chocolate chips, nuts, or seasonal flavors.</p>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1509440159596-0249088772ff?w=600&q=80" alt="Homestyle pies" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Homestyle Pies</h3>
+              <p>Buttery, flaky crusts filled with seasonal fruits, custards, and Tennessee favorites.</p>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1563805042-7684c019e1cb?w=600&q=80" alt="Handcrafted ice cream" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Handcrafted Ice Cream</h3>
+              <p>Small-batch ice cream made with local dairy and creative, rotating flavors.</p>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&q=80" alt="Fudgy brownies" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Fudgy Brownies</h3>
+              <p>Rich, chocolatey, and perfectly dense. Available with or without walnuts!</p>
+            </div>
+          </div>
+          <div class="menu-item">
+            <div class="menu-item-image">
+              <img src="https://images.unsplash.com/photo-1571115177098-24ec42ed204d?w=600&q=80" alt="Gourmet cupcakes" loading="lazy">
+            </div>
+            <div class="menu-item-content">
+              <h3>Gourmet Cupcakes</h3>
+              <p>Individual-sized indulgence with fluffy cake and dreamy buttercream frosting.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section id="testimonials" class="testimonials">
+      <div class="container">
+        <div class="section-header">
+          <h2>What People Are Saying</h2>
+          <p>Don't just take our word for it - here's what our customers have to say!</p>
+        </div>
+        <div class="testimonial-carousel">
+          <button class="carousel-nav carousel-prev" aria-label="Previous testimonial">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <div class="testimonial-track">
+            <div class="testimonial-slides">
+              <div class="testimonial-slide">
+                <div class="testimonial-stars">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <p class="testimonial-text">"Absolutely the best brownies I've ever had! The Sweet Wheels truck is always at our office park and we couldn't be happier. Highly recommend!"</p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">SM</div>
+                  <div class="testimonial-info">
+                    <h4>Sarah Mitchell</h4>
+                    <p>Knoxville, TN</p>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-slide">
+                <div class="testimonial-stars">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <p class="testimonial-text">"We hired Sweet Wheels for our wedding and it was PERFECT! All our guests raved about the desserts. Thank you for making our day extra special!"</p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">JL</div>
+                  <div class="testimonial-info">
+                    <h4>Jake & Lisa</h4>
+                    <p>Wedding Clients</p>
+                  </div>
+                </div>
+              </div>
+              <div class="testimonial-slide">
+                <div class="testimonial-stars">
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                  <i class="fa-solid fa-star"></i>
+                </div>
+                <p class="testimonial-text">"Their seasonal peach pie is TO DIE FOR! Fresh Tennessee peaches in that flaky crust... I dream about it. Can't wait for peach season every year!"</p>
+                <div class="testimonial-author">
+                  <div class="testimonial-avatar">MJ</div>
+                  <div class="testimonial-info">
+                    <h4>Marcus Johnson</h4>
+                    <p>Regular Customer</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <button class="carousel-nav carousel-next" aria-label="Next testimonial">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <div class="carousel-dots">
+            <button class="carousel-dot active" aria-label="Go to testimonial 1"></button>
+            <button class="carousel-dot" aria-label="Go to testimonial 2"></button>
+            <button class="carousel-dot" aria-label="Go to testimonial 3"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+    
+    <section class="cta-section">
+      <div class="container">
+        <div class="cta-card">
+          <h2>Ready for Something Sweet?</h2>
+          <p>Find out where we'll be today and come say hello! Our truck is loaded with fresh treats just for you.</p>
+          <a href="sweet-wheels-redesigned.html" class="btn">
+            <span>Find Our Location</span>
+            <i class="fa-solid fa-map-location-dot"></i>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+  
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-brand">
+            <i class="fa-solid fa-ice-cream"></i>
+            <span>Sweet Wheels</span>
+          </div>
+          <p class="footer-tagline">Bringing artisan cakes, cookies, pies, ice cream, and seasonal desserts to every corner of Knoxville.</p>
+          <div class="footer-social">
+            <a href="https://instagram.com/sweetwheelsknox" target="_blank" rel="noopener">
+              <i class="fa-brands fa-instagram"></i>
+            </a>
+            <a href="https://facebook.com/sweetwheelsknox" target="_blank" rel="noopener">
+              <i class="fa-brands fa-facebook"></i>
+            </a>
+            <a href="https://twitter.com/sweetwheelsknox" target="_blank" rel="noopener">
+              <i class="fa-brands fa-twitter"></i>
+            </a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>Quick Links</h4>
+          <div class="footer-links">
+            <a href="#about">About Us</a>
+            <a href="#menu">Menu</a>
+            <a href="#testimonials">Reviews</a>
+            <a href="sweet-wheels-redesigned.html">Find Us</a>
+          </div>
+        </div>
+        <div class="footer-section">
+          <h4>Contact</h4>
+          <div class="footer-links">
+            <a href="mailto:hello@sweetwheelsknox.com">hello@sweetwheelsknox.com</a>
+            <a href="tel:+18655551234">(865) 555-1234</a>
+            <a href="#">Knoxville, TN</a>
+          </div>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2024 Sweet Wheels. All rights reserved. Handcrafted with <i class="fa-solid fa-heart"></i> in Tennessee.</p>
+      </div>
+    </div>
+  </footer>
+  
+  <button class="scroll-top">
+    <i class="fa-solid fa-arrow-up"></i>
+  </button>
+  
+  <script>
+    const menuToggle = document.querySelector('.menu-toggle');
+    const navLinks = document.querySelector('.nav-links');
+    const navOverlay = document.querySelector('.nav-overlay');
+    const navItems = document.querySelectorAll('.nav-links a');
+    
+    menuToggle.addEventListener('click', () => {
+      const isActive = navLinks.classList.toggle('active');
+      navOverlay.classList.toggle('active');
+      menuToggle.classList.toggle('active');
+      document.body.style.overflow = isActive ? 'hidden' : '';
+    });
+    
+    navOverlay.addEventListener('click', () => {
+      navLinks.classList.remove('active');
+      navOverlay.classList.remove('active');
+      menuToggle.classList.remove('active');
+      document.body.style.overflow = '';
+    });
+    
+    navItems.forEach(item => {
+      item.addEventListener('click', () => {
+        if (window.innerWidth < 768) {
+          navLinks.classList.remove('active');
+          navOverlay.classList.remove('active');
+          menuToggle.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+      });
+    });
+    
+    const scrollBtn = document.querySelector('.scroll-top');
+    
+    window.addEventListener('scroll', () => {
+      if (window.pageYOffset > 400) {
+        scrollBtn.classList.add('visible');
+      } else {
+        scrollBtn.classList.remove('visible');
+      }
+    });
+    
+    scrollBtn.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', function (e) {
+        const href = this.getAttribute('href');
+        if (href !== '#' && href !== '') {
+          e.preventDefault();
+          const target = document.querySelector(href);
+          if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+          }
+        }
+      });
+    });
+    
+    // Testimonial Carousel (True Infinite Loop)
+    const carouselSlides = document.querySelector('.testimonial-slides');
+    const slides = document.querySelectorAll('.testimonial-slide');
+    const prevBtn = document.querySelector('.carousel-prev');
+    const nextBtn = document.querySelector('.carousel-next');
+    const dots = document.querySelectorAll('.carousel-dot');
+    const carousel = document.querySelector('.testimonial-carousel');
+    
+    let currentSlide = 0;
+    const totalSlides = slides.length;
+    let autoPlayInterval;
+    let touchStartX = 0;
+    let touchEndX = 0;
+    let isDragging = false;
+    let isTransitioning = false;
+    
+    function updateCarousel(animate = true) {
+      if (isTransitioning) return;
+      
+      if (!animate) {
+        carouselSlides.style.transition = 'none';
+      } else {
+        carouselSlides.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+        isTransitioning = true;
+        setTimeout(() => {
+          isTransitioning = false;
+        }, 600);
+      }
+      
+      carouselSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+      
+      // Update dots (wrap around for infinite feel)
+      const actualSlide = ((currentSlide % totalSlides) + totalSlides) % totalSlides;
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('active', index === actualSlide);
+      });
+      
+      // Trigger star animation
+      const currentStars = slides[actualSlide].querySelectorAll('.testimonial-stars i');
+      currentStars.forEach((star, index) => {
+        star.style.animation = 'none';
+        setTimeout(() => {
+          star.style.animation = `starPop 0.4s ease-out ${0.1 + index * 0.05}s backwards`;
+        }, 10);
+      });
+    }
+    
+    function nextSlide() {
+      currentSlide++;
+      updateCarousel();
+      resetAutoPlay();
+      
+      // Loop back to beginning seamlessly
+      if (currentSlide >= totalSlides) {
+        setTimeout(() => {
+          carouselSlides.style.transition = 'none';
+          currentSlide = 0;
+          carouselSlides.style.transform = `translateX(0%)`;
+          setTimeout(() => {
+            carouselSlides.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          }, 50);
+        }, 600);
+      }
+    }
+    
+    function prevSlide() {
+      // Jump to end seamlessly when going back from first slide
+      if (currentSlide === 0) {
+        carouselSlides.style.transition = 'none';
+        currentSlide = totalSlides;
+        carouselSlides.style.transform = `translateX(-${currentSlide * 100}%)`;
+        setTimeout(() => {
+          carouselSlides.style.transition = 'transform 0.6s cubic-bezier(0.4, 0, 0.2, 1)';
+          currentSlide--;
+          updateCarousel();
+        }, 50);
+      } else {
+        currentSlide--;
+        updateCarousel();
+      }
+      resetAutoPlay();
+    }
+    
+    function goToSlide(index) {
+      currentSlide = index;
+      updateCarousel();
+      resetAutoPlay();
+    }
+    
+    // Button navigation
+    nextBtn.addEventListener('click', nextSlide);
+    prevBtn.addEventListener('click', prevSlide);
+    
+    // Dot navigation
+    dots.forEach((dot, index) => {
+      dot.addEventListener('click', () => goToSlide(index));
+    });
+    
+    // Touch/Swipe support
+    carousel.addEventListener('touchstart', (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+      isDragging = true;
+      clearInterval(autoPlayInterval);
+    }, { passive: true });
+    
+    carousel.addEventListener('touchmove', (e) => {
+      if (!isDragging) return;
+      touchEndX = e.changedTouches[0].screenX;
+    }, { passive: true });
+    
+    carousel.addEventListener('touchend', () => {
+      if (!isDragging) return;
+      isDragging = false;
+      
+      const swipeThreshold = 50;
+      const diff = touchStartX - touchEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+      
+      startAutoPlay();
+    });
+    
+    // Mouse drag support
+    let mouseStartX = 0;
+    let mouseEndX = 0;
+    let isMouseDragging = false;
+    
+    carousel.addEventListener('mousedown', (e) => {
+      mouseStartX = e.clientX;
+      isMouseDragging = true;
+      carousel.style.cursor = 'grabbing';
+      clearInterval(autoPlayInterval);
+    });
+    
+    carousel.addEventListener('mousemove', (e) => {
+      if (!isMouseDragging) return;
+      mouseEndX = e.clientX;
+    });
+    
+    carousel.addEventListener('mouseup', () => {
+      if (!isMouseDragging) return;
+      isMouseDragging = false;
+      carousel.style.cursor = 'grab';
+      
+      const swipeThreshold = 50;
+      const diff = mouseStartX - mouseEndX;
+      
+      if (Math.abs(diff) > swipeThreshold) {
+        if (diff > 0) {
+          nextSlide();
+        } else {
+          prevSlide();
+        }
+      }
+      
+      startAutoPlay();
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+      if (isMouseDragging) {
+        isMouseDragging = false;
+        carousel.style.cursor = 'grab';
+        startAutoPlay();
+      }
+    });
+    
+    // Auto-play functionality (infinite loop)
+    function startAutoPlay() {
+      autoPlayInterval = setInterval(() => {
+        nextSlide();
+      }, 6000);
+    }
+    
+    function resetAutoPlay() {
+      clearInterval(autoPlayInterval);
+      startAutoPlay();
+    }
+    
+    // Pause auto-play on hover
+    carousel.addEventListener('mouseenter', () => {
+      clearInterval(autoPlayInterval);
+      carousel.style.cursor = 'grab';
+    });
+    
+    carousel.addEventListener('mouseleave', () => {
+      if (!isMouseDragging) {
+        startAutoPlay();
+        carousel.style.cursor = 'default';
+      }
+    });
+    
+    // Keyboard navigation
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowLeft') prevSlide();
+      if (e.key === 'ArrowRight') nextSlide();
+    });
+    
+    // Initialize
+    updateCarousel(false);
+    startAutoPlay();
+  </script>
+</body>
+</html>
